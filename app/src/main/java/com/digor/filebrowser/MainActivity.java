@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             bottomNavigationView.setOnItemSelectedListener(this);
             bottomNavigationView.findViewById(R.id.home_menu_button).performClick();
         }
-
-        int a = 10;
     }
 
     @Override
