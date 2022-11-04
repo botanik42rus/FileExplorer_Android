@@ -18,6 +18,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -29,14 +30,15 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public NavigationView appNavigationView;
     public AppCompatImageButton appMenuButton;
     public DrawerLayout mainLayout;
+    FloatingActionButton floatingActionButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         BottomNavigationBarSetup();
-        RightNavigationViewSetup();
+        LeftNavigationViewSetup();
         ButtonMenuBackSetup();
+        SetupFloatButton();
     }
 
     @Override
@@ -47,6 +49,14 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 return true;
             case R.id.tabRight:
                 CommitFragment(TabRight.Instance());
+                return true;
+            case R.id.home_button:
+                CommitFragment(HomeFragment.Instance());
+                SkipSelectedBottomBar();
+                return true;
+            case R.id.settings_button:
+                CommitFragment(SettingsFragment.Instance());
+                SkipSelectedBottomBar();
                 return true;
         }
         return true;
@@ -71,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             }
             fragmentTransaction.add(R.id.FragmentContainer, fragment);
             fragmentTransaction.commit();
+
+            if(mainLayout != null){
+                mainLayout.closeDrawer(GravityCompat.START);
+            }
         }
     }
 
@@ -82,10 +96,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         }
     }
 
-    protected void RightNavigationViewSetup(){
+    protected void LeftNavigationViewSetup(){
         appNavigationView = findViewById(R.id.navigationView);
         if(appNavigationView != null){
             appNavigationView.inflateHeaderView(R.layout.navigation_head);
+            appNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         }
     }
 
@@ -98,5 +113,24 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 mainLayout.openDrawer(GravityCompat.START);
             }
         });
+    }
+
+    protected void SetupFloatButton(){
+        floatingActionButton = findViewById(R.id.homeFloatingButton);
+        if (floatingActionButton!=null){
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SkipSelectedBottomBar();
+                    CommitFragment(HomeFragment.Instance());
+                }
+            });
+        }
+    }
+
+    protected void SkipSelectedBottomBar(){
+        if(bottomNavigationView != null){
+            bottomNavigationView.findViewById(R.id.Placeholder).performClick();
+        }
     }
 }
