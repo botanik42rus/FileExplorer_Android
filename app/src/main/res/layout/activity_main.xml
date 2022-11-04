@@ -35,6 +35,16 @@
                     android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
                     android:scaleType="centerInside"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tittleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/topMenuButton"
+                    android:textSize="32dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/black"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
             <View
                 android:layout_width="match_parent"
