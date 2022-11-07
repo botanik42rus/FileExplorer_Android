@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <ImageView
+        android:id="@+id/icon_template"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/file_ic"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/name_template"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FILE 1"
+        app:layout_constraintLeft_toRightOf="@+id/icon_template"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:textSize="28dp"
+        />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/dateChange_template"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00.00.00y 00:00"
+        app:layout_constraintLeft_toRightOf="@id/icon_template"
+        app:layout_constraintTop_toBottomOf="@id/name_template"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:textSize="15dp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/size_template"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100 Gb"
+        app:layout_constraintTop_toBottomOf="@id/name_template"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="2dp"
+        android:textSize="20dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@drawable/top_bar_dropshadow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/size_template"
+        android:layout_marginTop="5dp"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

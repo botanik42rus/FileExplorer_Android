@@ -1,14 +1,23 @@
 package com.digor.filebrowser;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.media.audiofx.Equalizer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -20,6 +29,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
+import java.security.Permissions;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
@@ -33,6 +43,17 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public AppCompatTextView tittleTextView;
     private String CurrentFragment;
     private String BackFragment;
+    private AlertDialog.Builder alertDialogBuider;
+
+    public String[] RequestedPermissions(){
+        try {
+            PackageInfo pInfo =  getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_PERMISSIONS);
+            return pInfo != null ? pInfo.requestedPermissions : null;
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
 
     private enum AnimationDirection{
         NO_ANIMATION,
@@ -52,6 +73,59 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     @Override
+    protected void onStart(){
+        super.onStart();
+        CheckPermissions();
+    }
+
+    private void CheckPermissions() {
+        String[] reqPerm = RequestedPermissions();
+        if(reqPerm != null) {
+            ActivityCompat.requestPermissions(this, reqPerm, 1);
+        }
+    }
+
+    private void EnviromentExit(){
+        this.finish();
+        System.exit(0);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestsCode, String[] permissions, int[] grantResults){
+        super.onRequestPermissionsResult(requestsCode, permissions, grantResults);
+
+        PermissionsInfo pInfo = new PermissionsInfo();
+        if(!pInfo.IsOnPermissionsGranted()){
+            alertDialogBuider = new AlertDialog.Builder(this);
+            alertDialogBuider.setMessage("Access denied! Please set all permissions is active").setTitle("Access denied!").
+                    setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            intent.addCategory(Intent.CATEGORY_DEFAULT);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                            startActivity(intent);
+                        }
+                    }).
+                    setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            EnviromentExit();
+                        }
+                    });
+
+            AlertDialog alert = alertDialogBuider.create();
+            alert.setTitle("Access denied!");
+            alert.show();
+        
+        }
+    }
+
+    @Override
     public  boolean onNavigationItemSelected(@NonNull MenuItem item){
         switch (item.getItemId()){
             case R.id.tabLeft:
@@ -61,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 CommitFragment(TabRight.Instance());
                 break;
             case R.id.home_button:
-                CommitFragment(HomeFragment.Instance());
+                CommitFragment(HomeFragment.Instance(getApplicationContext()));
                 SkipSelectedBottomBar();
                 break;
             case R.id.settings_button:
@@ -202,3 +276,4 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
          }
      }
 }
+
