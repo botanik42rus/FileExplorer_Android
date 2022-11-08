@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".TabLeft"
+    tools:context=".TabView"
     android:id="@+id/tab_left_fragment"
     android:background="@color/material_dynamic_neutral50">
 

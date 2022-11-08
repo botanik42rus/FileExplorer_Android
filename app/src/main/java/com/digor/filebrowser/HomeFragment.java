@@ -14,23 +14,12 @@ import androidx.fragment.app.Fragment;
 public class HomeFragment extends Fragment {
 
     private static HomeFragment _instance;
-    public static  HomeFragment Instance(Context context ){
-        if(_instance == null){
-            _instance = new HomeFragment(context);
-        }
-        return _instance;
-    }
 
     public static  HomeFragment Instance(){
         if(_instance == null){
             _instance = new HomeFragment();
         }
         return _instance;
-    }
-    private Context _mainContext;
-
-    private HomeFragment(Context context){
-        _mainContext = context;
     }
 
     private HomeFragment(){}

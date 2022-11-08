@@ -1,10 +1,10 @@
 package com.digor.filebrowser;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -29,7 +29,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
-import java.security.Permissions;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
@@ -41,9 +40,14 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public DrawerLayout mainLayout;
     public FloatingActionButton floatingActionButton;
     public AppCompatTextView tittleTextView;
-    private String CurrentFragment;
+    private AnimationObject CurrentFragment;
     private String BackFragment;
     private AlertDialog.Builder alertDialogBuider;
+
+    private AnimationDirection currentDirection;
+    public TabView tabLeft;
+    public TabView tabRight;
+    public static Context mainContext;
 
     public String[] RequestedPermissions(){
         try {
@@ -61,15 +65,27 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         FROM_RIGHT_TO_LEFT
     }
 
+    private enum AnimationObject{
+        NOT_ANIMATED,
+        TAB_LEFT,
+        HOME,
+        TAB_RIGHT
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mainContext = this;
+        tabLeft = new TabView();
+        tabRight = new TabView();
+
         BottomNavigationBarSetup();
         LeftNavigationViewSetup();
         TopBarSetup();
         SetupFloatButton();
+
     }
 
     @Override
@@ -129,26 +145,32 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public  boolean onNavigationItemSelected(@NonNull MenuItem item){
         switch (item.getItemId()){
             case R.id.tabLeft:
-                CommitFragment(TabLeft.Instance());
+                IsAnimationDirection(AnimationObject.TAB_LEFT);
+                CommitFragment(tabLeft);
                 break;
             case R.id.tabRight:
-                CommitFragment(TabRight.Instance());
+                IsAnimationDirection(AnimationObject.TAB_RIGHT);
+                CommitFragment(tabRight);
                 break;
             case R.id.home_button:
-                CommitFragment(HomeFragment.Instance(getApplicationContext()));
+                IsAnimationDirection(AnimationObject.HOME);
+                CommitFragment(HomeFragment.Instance());
                 SkipSelectedBottomBar();
                 break;
             case R.id.settings_button:
+                IsAnimationDirection(AnimationObject.NOT_ANIMATED);
                 CommitFragment(SettingsFragment.Instance());
                 SkipSelectedBottomBar();
                 HideBottomBar();
                 return true;
             case R.id.info_button:
+                IsAnimationDirection(AnimationObject.NOT_ANIMATED);
                 CommitFragment(AboutFragment.Instance());
                 SkipSelectedBottomBar();
                 HideBottomBar();
                 return true;
             case R.id.dev_button:
+                IsAnimationDirection(AnimationObject.NOT_ANIMATED);
                 CommitFragment(DevInfoFragment.Instance());
                 SkipSelectedBottomBar();
                 HideBottomBar();
@@ -159,23 +181,33 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     protected  void CommitFragment(Fragment fragment){
+        if(mainLayout != null){
+            mainLayout.closeDrawer(GravityCompat.START);
+        }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if(fragmentTransaction != null && fragment != null) {
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
-            AnimationDirection currentDirection = IsAnimationDirection(fragment);
             if(currentDirection == AnimationDirection.FROM_LEFT_TO_RIGHT){
                 fragmentTransaction.setCustomAnimations(R.anim.slide_from_left, R.anim.slide_to_right);
             }
             else if(currentDirection == AnimationDirection.FROM_RIGHT_TO_LEFT){
                 fragmentTransaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left);
             }
+            tittleTextView.setText(fragment.getClass().getSimpleName());
 
             for (Fragment itemFragment : fragments) {
                 if (itemFragment.getClass().getSimpleName() != fragment.getClass().getSimpleName()) {
                     fragmentTransaction.hide(itemFragment);
                 }
             }
+
+            if(fragment.isAdded()){
+                fragmentTransaction.show(fragment);
+                fragmentTransaction.commit();
+                return;
+            }
+
             for (Fragment itemFragment : fragments) {
                 if (itemFragment.getClass().getSimpleName() == fragment.getClass().getSimpleName()) {
                     fragmentTransaction.show(itemFragment);
@@ -185,33 +217,20 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             }
             fragmentTransaction.add(R.id.FragmentContainer, fragment);
             fragmentTransaction.commit();
-            if(mainLayout != null){
-                mainLayout.closeDrawer(GravityCompat.START);
-            }
-            CurrentFragment = fragment.getClass().getSimpleName();
-            tittleTextView.setText(fragment.getClass().getSimpleName());
         }
     }
 
-    protected AnimationDirection IsAnimationDirection(Fragment fragment){
-            String newFragment = fragment.getClass().getSimpleName();
-            String tabLeft = TabLeft.Instance().getClass().getSimpleName();
-            String tabRight = TabRight.Instance().getClass().getSimpleName();
-            String home = HomeFragment.Instance().getClass().getSimpleName();
+    protected void IsAnimationDirection(AnimationObject newObject){
+        CurrentFragment = CurrentFragment != null ? CurrentFragment : AnimationObject.NOT_ANIMATED;
 
-            if((newFragment != null && CurrentFragment != null)&&
-                    ((CurrentFragment.equals(tabLeft) && (newFragment.equals(home) || newFragment.equals(tabRight))) ||
-                            (CurrentFragment.equals(home) && newFragment.equals(tabRight)))){
-                return AnimationDirection.FROM_RIGHT_TO_LEFT;
-            }
-            else if((newFragment != null && CurrentFragment != null)&&
-                    (CurrentFragment.equals(tabRight)&&((newFragment.equals(home) || newFragment.equals(tabLeft))) ||
-                            (CurrentFragment.equals(home) && newFragment.equals(tabLeft)))){
-                return AnimationDirection.FROM_LEFT_TO_RIGHT;
-            }
+        if(newObject.ordinal() > CurrentFragment.ordinal()){
+            currentDirection = AnimationDirection.FROM_RIGHT_TO_LEFT;
+        }
+        else {
+            currentDirection = newObject.ordinal() < CurrentFragment.ordinal() ? AnimationDirection.FROM_LEFT_TO_RIGHT : AnimationDirection.NO_ANIMATION;
+        }
 
-            return AnimationDirection.NO_ANIMATION;
-
+        CurrentFragment = newObject;
     }
 
     protected void BottomNavigationBarSetup(){
@@ -249,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    IsAnimationDirection(AnimationObject.HOME);
                     SkipSelectedBottomBar();
                     CommitFragment(HomeFragment.Instance());
                 }

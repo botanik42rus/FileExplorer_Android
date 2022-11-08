@@ -34,6 +34,13 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
         holder.nameView.setText(state.getNameObject());
         holder.dateChangeView.setText(state.getDateChangeObject());
         holder.sizeView.setText(state.getSizeObject());
+        holder.iconView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                states.remove(0);
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

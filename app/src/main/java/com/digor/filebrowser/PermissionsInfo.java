@@ -18,7 +18,7 @@ public class PermissionsInfo {
 
     public List<String> RequestPermissions() {
         try {
-            Context context = HomeFragment.Instance().getContext();
+            Context context = MainActivity.mainContext;
             PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
             return pInfo != null ? Arrays.asList(pInfo.requestedPermissions) : null;
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class PermissionsInfo {
     }
 
     public boolean IsPermissionGranted(String permission) {
-        Context context = HomeFragment.Instance().getContext();
+        Context context = MainActivity.mainContext;
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P && permission.equals(Manifest.permission.FOREGROUND_SERVICE)) {
             return true;

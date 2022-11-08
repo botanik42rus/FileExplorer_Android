@@ -7,9 +7,9 @@
     app:startDestination="@layout/home_fragment">
     <fragment
         android:id="@+id/navigation_tab_left"
-        android:name="com.digor.filebrowser.TabLeft"
+        android:name="com.digor.filebrowser.TabView"
         android:label="Tab left"
-        tools:layout="@layout/fragment_tab_left"/>
+        tools:layout="@layout/fragment_tab_view"/>
     <fragment
         android:id="@+id/navigation_tab_right"
         android:name="com.digor.filebrowser.TabRight"

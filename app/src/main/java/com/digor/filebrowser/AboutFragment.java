@@ -20,7 +20,6 @@ public class AboutFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _instance = new AboutFragment();
     }
 
     @Override

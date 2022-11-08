@@ -13,29 +13,20 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-public class TabLeft extends Fragment {
+public class TabView extends Fragment {
 
-    private static TabLeft _instance;
-    public static TabLeft Instance(){
-        if(_instance == null){
-            _instance = new TabLeft();
-        }
-        return _instance;
-    }
 
     ArrayList<State> states = new ArrayList<State>();
     RecyclerView recyclerView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        _instance = new TabLeft();
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tab_left, container, false);
+        View view = inflater.inflate(R.layout.fragment_tab_view, container, false);
 
         InitializeData();
         recyclerView = view.findViewById(R.id.recycleViewLeft);

@@ -21,7 +21,6 @@ public class DevInfoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _instance = new DevInfoFragment();
     }
 
     @Override
