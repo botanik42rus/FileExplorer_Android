@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DevInfoFragment"
+    tools:context=".ui.DevInfoFragment"
     android:id="@+id/dev_button"
-    android:background="@color/material_dynamic_tertiary50"
     >
 
     <TextView

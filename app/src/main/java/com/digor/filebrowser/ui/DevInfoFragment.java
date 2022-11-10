@@ -1,4 +1,4 @@
-package com.digor.filebrowser;
+package com.digor.filebrowser.ui;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.digor.filebrowser.R;
 
 
 public class DevInfoFragment extends Fragment {

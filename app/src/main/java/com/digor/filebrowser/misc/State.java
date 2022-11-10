@@ -1,4 +1,4 @@
-package com.digor.filebrowser;
+package com.digor.filebrowser.misc;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class State {
-    public State(String name, String size, String dateChange, int image){
+    public State(String name, String size, String dateChange, int image, String path){
         nameObject = name;
         sizeObject = size;
         dateChangeObject = dateChange;
         imageObject = image;
+        buttonPath =path;
     }
 
     private String nameObject;
@@ -50,5 +51,9 @@ public class State {
     public void setImageObject(int image){
         imageObject = image;
     }
+
+    private String buttonPath;
+    public String getButtonPath(){return buttonPath;}
+    public void setButtonPath(String path){ buttonPath = path; }
 }
 

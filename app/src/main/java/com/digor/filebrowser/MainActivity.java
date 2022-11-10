@@ -23,6 +23,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.digor.filebrowser.misc.PermissionsInfo;
+import com.digor.filebrowser.ui.AboutFragment;
+import com.digor.filebrowser.ui.DevInfoFragment;
+import com.digor.filebrowser.ui.HomeFragment;
+import com.digor.filebrowser.ui.SettingsFragment;
+import com.digor.filebrowser.ui.TabView;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,6 +38,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
+    private AlertDialog.Builder alertDialogBuider;
 
     public BottomAppBar bottomAppBar;
     public BottomNavigationView bottomNavigationView;
@@ -39,12 +46,12 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public AppCompatImageButton appMenuButton;
     public DrawerLayout mainLayout;
     public FloatingActionButton floatingActionButton;
+
     public AppCompatTextView tittleTextView;
     private AnimationObject CurrentFragment;
-    private String BackFragment;
-    private AlertDialog.Builder alertDialogBuider;
-
     private AnimationDirection currentDirection;
+
+
     public TabView tabLeft;
     public TabView tabRight;
     public static Context mainContext;
@@ -77,15 +84,43 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try{
+
+            SetupObjects();
+            BottomNavigationBarSetup();
+            LeftNavigationViewSetup();
+            TopBarSetup();
+            SetupFloatButton();
+        }
+        catch (Exception e){
+            Log.i("myLog", e.toString());
+        }
+
+    }
+
+    private void SetupObjects(){
         mainContext = this;
         tabLeft = new TabView();
         tabRight = new TabView();
+        /* Test swipe functional
+        FrameLayout FragmentContainer = findViewById(R.id.FragmentContainer);
+        FragmentContainer.setOnTouchListener(new OnSwipeListener(MainActivity.this){
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeLeft();
+                IsAnimationDirection(AnimationObject.TAB_LEFT);
+                CommitFragment(tabLeft);
+                ShowBottomBar();
+            }
 
-        BottomNavigationBarSetup();
-        LeftNavigationViewSetup();
-        TopBarSetup();
-        SetupFloatButton();
-
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeRight();
+                IsAnimationDirection(AnimationObject.TAB_RIGHT);
+                CommitFragment(tabRight);
+                ShowBottomBar();
+            }
+        });*/
     }
 
     @Override
@@ -117,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);//ACTION_APPLICATION_DETAILS_SETTINGS);
                             Uri uri = Uri.fromParts("package", getPackageName(), null);
                             intent.setData(uri);
                             intent.addCategory(Intent.CATEGORY_DEFAULT);

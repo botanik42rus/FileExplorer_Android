@@ -1,4 +1,4 @@
-package com.digor.filebrowser;
+package com.digor.filebrowser.misc;
 
 import android.Manifest;
 import android.app.ActivityManager;

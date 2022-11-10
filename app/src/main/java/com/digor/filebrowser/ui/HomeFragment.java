@@ -1,5 +1,4 @@
-package com.digor.filebrowser;
-import android.content.Context;
+package com.digor.filebrowser.ui;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +9,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.digor.filebrowser.misc.PermissionsInfo;
+import com.digor.filebrowser.R;
 
 public class HomeFragment extends Fragment {
 

@@ -1,15 +1,18 @@
-package com.digor.filebrowser;
+package com.digor.filebrowser.misc;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.digor.filebrowser.MainActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +37,7 @@ public class PermissionsInfo {
 
         for (String permissions : requestedPermissions) {
             if (!IsPermissionGranted(permissions)) {
+                Log.i("myLog", permissions);
                 return false;
             }
         }
@@ -46,6 +50,13 @@ public class PermissionsInfo {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P && permission.equals(Manifest.permission.FOREGROUND_SERVICE)) {
             return true;
         }
+        if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.R && permission.equals(Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
+            return Environment.isExternalStorageManager();
+        }
+        else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+        }
+
         if (permission.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
             return true;
         }

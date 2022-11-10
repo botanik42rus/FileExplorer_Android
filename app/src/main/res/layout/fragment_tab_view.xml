@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".TabView"
-    android:id="@+id/tab_left_fragment"
-    android:background="@color/material_dynamic_neutral50">
+    tools:context=".ui.TabView"
+    android:id="@+id/tab_left_fragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleViewLeft"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:paddingBottom="50dp"/>
 
 </FrameLayout>

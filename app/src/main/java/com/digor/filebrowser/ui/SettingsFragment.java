@@ -1,4 +1,4 @@
-package com.digor.filebrowser;
+package com.digor.filebrowser.ui;
 
 import android.os.Bundle;
 
@@ -8,23 +8,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class AboutFragment extends Fragment {
+import com.digor.filebrowser.R;
 
-    private static AboutFragment _instance;
-    public static AboutFragment Instance(){
+
+public class SettingsFragment extends Fragment {
+
+    private static SettingsFragment _instance;
+    public static SettingsFragment Instance(){
         if(_instance == null){
-            _instance = new AboutFragment();
+            _instance = new SettingsFragment();
         }
         return _instance;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        _instance = new SettingsFragment();
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_about, container, false);
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 }
