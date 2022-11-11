@@ -2,6 +2,7 @@ package com.digor.filebrowser.misc;
 
 import android.os.Build;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +29,12 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
 
     private final LayoutInflater inflater;
     private final List<State> states;
+    private final IFileExplore FileExploreClass;
 
-    public StateAdapter(LayoutInflater inflaterParent, List<State> states) {
+    public StateAdapter(LayoutInflater inflaterParent, List<State> states, IFileExplore fileExploreClass) {
         this.states = states;
         this.inflater = inflaterParent;
+        FileExploreClass = fileExploreClass;
     }
 
     @Override
@@ -47,67 +50,18 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
         holder.nameView.setText(state.getNameObject());
         holder.dateChangeView.setText(state.getDateChangeObject());
         holder.sizeView.setText(state.getSizeObject());
-        holder.iconView.setOnClickListener(new View.OnClickListener() {
+
+        holder.getCurrentView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               FolderNavigation(state.getButtonPath());
-            }
-        });
-    }
-
-    public void FolderNavigation(String path){
-        File newFile = new File(path);
-        try {
-            if (newFile != null) {
-                states.clear();
-                states.add(new State("<=", "", "", R.drawable.code_ic, newFile.getParent()));
-                for (String file : newFile.list()) {
-                    Path currentFilePath = null;
-                    long fileSize = 0;
-                    BasicFileAttributes fileAttributes = null;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                        currentFilePath = Paths.get(path + "/" + file);
-
-
-                        try {
-                            fileSize = Files.size(currentFilePath);
-                            fileAttributes = Files.readAttributes(currentFilePath, BasicFileAttributes.class);
-                        } catch (Exception e) {
-                        }
-
-                        File currentFile = new File(path + "/" + file);
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-                        states.add(new State(file,
-                                FormatBytes(fileSize),
-                                fileAttributes != null ? fileAttributes.lastModifiedTime().toString() : "",
-                                getTypeIcon(fileAttributes),
-                                currentFile.getPath()));
-                    }
+                List<State> newStates = FileExploreClass.FolderNavigation(state.getButtonPath());
+                if(newStates !=null){
+                    states.clear();
+                    states.addAll(newStates);
+                    notifyDataSetChanged();
                 }
             }
-        }catch(Exception e){
-            Log.i("myLog", e.toString());
-        }
-        notifyDataSetChanged();
-    }
-
-    public String FormatBytes(long size){
-        if(size <= 0) return "0 B";
-        String[] units = new String[]{"B","KB", "MB", "GB", "TB"};
-        int unitGroup = (int) (Math.log10(size)/Math.log10(1024));
-        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, unitGroup)) + " " + units[unitGroup];
-    }
-
-    public int getTypeIcon(BasicFileAttributes attr){
-        if(attr == null)
-            return R.drawable.code_ic;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return attr.isDirectory() ? R.drawable.ic_launcher_foreground : R.drawable.file_ic;
-        }
-        return R.drawable.info_ic;
+        });
     }
 
     @Override
@@ -119,7 +73,7 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
         final ImageView iconView;
         final AppCompatTextView nameView, dateChangeView, sizeView;
         final String buttonPath;
-
+        private final View currentView;
         ViewHolder(View view) {
             super(view);
             iconView = view.findViewById(R.id.icon_template);
@@ -127,6 +81,9 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
             dateChangeView = view.findViewById(R.id.dateChange_template);
             sizeView = view.findViewById(R.id.size_template);
             buttonPath = "";
+            currentView = view;
         }
+
+        public View getCurrentView(){return currentView;}
     }
 }
