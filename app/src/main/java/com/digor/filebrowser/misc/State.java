@@ -1,6 +1,8 @@
 package com.digor.filebrowser.misc;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class State {
-    public State(String name, String size, String dateChange, int image, String path){
+    public State(String name, String size, String dateChange, Drawable image, String path){
         nameObject = name;
         sizeObject = size;
         dateChangeObject = dateChange;
@@ -44,11 +46,11 @@ public class State {
         dateChangeObject = dateChange;
     }
 
-    private int imageObject;
-    public int getImageObject(){
+    private Drawable imageObject;
+    public Drawable getImageObject(){
         return imageObject;
     }
-    public void setImageObject(int image){
+    public void setImageObject(Drawable image){
         imageObject = image;
     }
 

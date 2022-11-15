@@ -46,7 +46,7 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         State state = states.get(position);
-        holder.iconView.setImageResource(state.getImageObject());
+        holder.iconView.setImageDrawable(state.getImageObject());
         holder.nameView.setText(state.getNameObject());
         holder.dateChangeView.setText(state.getDateChangeObject());
         holder.sizeView.setText(state.getSizeObject());
@@ -55,6 +55,7 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
             @Override
             public void onClick(View view) {
                 List<State> newStates = FileExploreClass.FolderNavigation(state.getButtonPath());
+                Log.i("myLog", state.getButtonPath());
                 if(newStates !=null){
                     states.clear();
                     states.addAll(newStates);
