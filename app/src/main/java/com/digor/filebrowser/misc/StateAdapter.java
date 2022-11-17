@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.digor.filebrowser.MainActivity;
 import com.digor.filebrowser.R;
+import com.digor.filebrowser.ui.TabView;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -30,40 +31,50 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
     private final LayoutInflater inflater;
     private final List<State> states;
     private final IFileExplore FileExploreClass;
-
-    public StateAdapter(LayoutInflater inflaterParent, List<State> states, IFileExplore fileExploreClass) {
+    private final boolean IsLayoutManagerLinear;
+    private TabView currentTabView;
+    public StateAdapter(LayoutInflater inflaterParent, List<State> states, IFileExplore fileExploreClass, boolean isLayoutManagerLinear, TabView tabView) {
         this.states = states;
         this.inflater = inflaterParent;
         FileExploreClass = fileExploreClass;
+        IsLayoutManagerLinear = isLayoutManagerLinear;
+        currentTabView = tabView;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.list_item_template, parent, false);
-        return new ViewHolder(view);
+        View view = inflater.inflate(IsLayoutManagerLinear ? R.layout.list_item_template : R.layout.grid_item_template, parent, false);
+        return new ViewHolder(view, IsLayoutManagerLinear);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holderList, int position) {
         State state = states.get(position);
-        holder.iconView.setImageDrawable(state.getImageObject());
-        holder.nameView.setText(state.getNameObject());
-        holder.dateChangeView.setText(state.getDateChangeObject());
-        holder.sizeView.setText(state.getSizeObject());
+        holderList.iconView.setImageDrawable(state.getImageObject());
 
-        holder.getCurrentView().setOnClickListener(new View.OnClickListener() {
+        holderList.nameView.setText(state.getNameObject());
+
+        holderList.dateChangeView.setText(state.getDateChangeObject());
+        holderList.sizeView.setText(state.getSizeObject());
+        holderList.getCurrentView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<State> newStates = FileExploreClass.FolderNavigation(state.getButtonPath());
-                Log.i("myLog", state.getButtonPath());
-                if(newStates !=null){
-                    states.clear();
-                    states.addAll(newStates);
-                    notifyDataSetChanged();
-                }
+                openPath(state.getButtonPath());
             }
         });
     }
+
+    public void openPath(String path){
+        List<State> newStates = FileExploreClass.FolderNavigation(path);
+        if(newStates !=null){
+            states.clear();
+            states.addAll(newStates);
+            notifyDataSetChanged();
+
+            currentTabView.returnButton.setVisibility(FileExploreClass.getIsInitial() ? View.GONE : View.VISIBLE);
+        }
+    }
+
 
     @Override
     public int getItemCount() {
@@ -75,12 +86,13 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
         final AppCompatTextView nameView, dateChangeView, sizeView;
         final String buttonPath;
         private final View currentView;
-        ViewHolder(View view) {
+        ViewHolder(View view, boolean isLinearLayoutManager) {
             super(view);
-            iconView = view.findViewById(R.id.icon_template);
-            nameView = view.findViewById(R.id.name_template);
-            dateChangeView = view.findViewById(R.id.dateChange_template);
-            sizeView = view.findViewById(R.id.size_template);
+            iconView = isLinearLayoutManager ? view.findViewById(R.id.icon_template) : view.findViewById(R.id.icon_template_grid);
+            nameView = isLinearLayoutManager ? view.findViewById(R.id.name_template) : view.findViewById(R.id.name_template_grid);
+
+            dateChangeView = isLinearLayoutManager ? view.findViewById(R.id.dateChange_template) : view.findViewById(R.id.dateChange_template_grid);
+            sizeView = isLinearLayoutManager ? view.findViewById(R.id.size_template) : view.findViewById(R.id.size_template_grid);
             buttonPath = "";
             currentView = view;
         }

@@ -32,6 +32,18 @@ import java.util.Locale;
 
 public class FileExploreAfterAPI26 implements IFileExplore {
 
+    private String parentPath;
+    @Override
+    public String getParentPath(){
+        return parentPath;
+    }
+
+    private boolean isInitial;
+    @Override
+    public boolean getIsInitial(){
+        return isInitial;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public List<State> FolderNavigation( String path) {
@@ -40,35 +52,17 @@ public class FileExploreAfterAPI26 implements IFileExplore {
         if(CurrentItem == null) return null;
 
         if(CurrentItem.isFile()){
-            try {
-
-                MimeTypeMap myMime = MimeTypeMap.getSingleton();
-                String mimeType = myMime.getMimeTypeFromExtension(FileExtensions(CurrentItem.getPath()));
-
-                Intent newIntent = new Intent(Intent.ACTION_VIEW);
-                newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                newIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                Uri myUri = FileProvider.getUriForFile(MainActivity.mainContext, BuildConfig.APPLICATION_ID, CurrentItem);
-                newIntent.setDataAndType(myUri,mimeType);
-
-                MainActivity.mainContext.startActivity(newIntent);
-            }
-            catch (Exception e){
-                Log.i("myLog", e.toString());
-            }
-
+            OpenFile(CurrentItem);
             return null;
         }
 
         try{
-            newStateArray.add(new State("","","",MainActivity.mainContext.getDrawable(R.drawable.return_ic), CurrentItem.getParent()));
-
+            parentPath = CurrentItem.getParent();
             if(CurrentItem.list() == null){
-                Log.i("myLog", "list == null");
                 return InitializeData();
             }
 
+            isInitial = false;
             for (String file : CurrentItem.list()){
                 Path currentItemPath = Paths.get(path + "/"+file);
                 MimeTypeMap myMime = MimeTypeMap.getSingleton();
@@ -130,9 +124,30 @@ public class FileExploreAfterAPI26 implements IFileExplore {
         for(File filesToStorage : extRootPath){
             arrFiles.add(new State(filesToStorage.getName(),"","", MainActivity.mainContext.getDrawable(R.drawable.sd_card_ic), filesToStorage.getPath()));
         }
+
+        isInitial = true;
         return arrFiles;
     }
 
+    public void OpenFile(File file){
+        try {
+
+            MimeTypeMap myMime = MimeTypeMap.getSingleton();
+            String mimeType = myMime.getMimeTypeFromExtension(FileExtensions(file.getPath()));
+
+            Intent newIntent = new Intent(Intent.ACTION_VIEW);
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            newIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            Uri myUri = FileProvider.getUriForFile(MainActivity.mainContext, BuildConfig.APPLICATION_ID, file);
+            newIntent.setDataAndType(myUri,mimeType);
+
+            MainActivity.mainContext.startActivity(newIntent);
+        }
+        catch (Exception e){
+            Log.i("myLog", e.toString());
+        }
+    }
 
     public String FormatBytes(long size){
         if(size <= 0) return "0 B";
