@@ -1,5 +1,8 @@
 package com.digor.filebrowser.misc;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -25,6 +28,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> {
 
@@ -33,6 +37,7 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
     private final IFileExplore FileExploreClass;
     private final boolean IsLayoutManagerLinear;
     private TabView currentTabView;
+    public Thread setupScetchTh;
     public StateAdapter(LayoutInflater inflaterParent, List<State> states, IFileExplore fileExploreClass, boolean isLayoutManagerLinear, TabView tabView) {
         this.states = states;
         this.inflater = inflaterParent;
@@ -49,32 +54,60 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holderList, int position) {
-        State state = states.get(position);
-        holderList.iconView.setImageDrawable(state.getImageObject());
+        try {
+            State state = states.get(position);
+            holderList.iconView.setImageDrawable(state.getImageObject());
 
-        holderList.nameView.setText(state.getNameObject());
+            holderList.nameView.setText(state.getNameObject());
 
-        holderList.dateChangeView.setText(state.getDateChangeObject());
-        holderList.sizeView.setText(state.getSizeObject());
-        holderList.getCurrentView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openPath(state.getButtonPath());
-            }
-        });
-    }
-
-    public void openPath(String path){
-        List<State> newStates = FileExploreClass.FolderNavigation(path);
-        if(newStates !=null){
-            states.clear();
-            states.addAll(newStates);
-            notifyDataSetChanged();
-
-            currentTabView.returnButton.setVisibility(FileExploreClass.getIsInitial() ? View.GONE : View.VISIBLE);
+            holderList.dateChangeView.setText(state.getDateChangeObject());
+            holderList.sizeView.setText(state.getSizeObject());
+            holderList.getCurrentView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openPath(state.getButtonPath());
+                }
+            });
+        }catch (Exception e){
+            Log.i("myLog", e.toString());
         }
     }
 
+    public void openPath(String path){
+        try {
+            List<State> newStates = FileExploreClass.FolderNavigation(path);
+            if(newStates !=null){
+                if(setupScetchTh != null)
+                    setupScetchTh.interrupt();
+
+                states.clear();
+                states.addAll(newStates);
+                notifyDataSetChanged();
+
+                currentTabView.returnButton.setVisibility(FileExploreClass.getIsInitial() ? View.GONE : View.VISIBLE);
+                setupScetchTh = new Thread(this::setScetchImage);
+                setupScetchTh.start();
+            }
+        }catch (Exception e){
+            Log.i("myLog", e.toString() + "!2!2");
+        }
+    }
+
+    private void setScetchImage(){
+        try {
+            for (com.digor.filebrowser.misc.State currentItem:states) {
+                if(Thread.currentThread().isInterrupted()) return;
+                if(currentItem.getCurrentMimeType() != null && currentItem.getCurrentMimeType().contains("image")){
+                    Bitmap bmp = BitmapFactory.decodeFile(currentItem.getButtonPath());
+                    currentItem.setImageObject(new BitmapDrawable(MainActivity.mainContext.getResources(), Bitmap.createScaledBitmap(bmp, 45, 45, false)));
+                    bmp.recycle();
+                    bmp = null;
+                }
+            }
+        }catch (Exception  ex){
+
+        }
+    }
 
     @Override
     public int getItemCount() {

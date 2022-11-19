@@ -14,12 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class State {
-    public State(String name, String size, String dateChange, Drawable image, String path){
+    public State(String name, String size, String dateChange, Drawable image, String path, String mimeType){
         nameObject = name;
         sizeObject = size;
         dateChangeObject = dateChange;
         imageObject = image;
         buttonPath =path;
+        currentMimeType = mimeType;
     }
 
     private String nameObject;
@@ -57,5 +58,9 @@ public class State {
     private String buttonPath;
     public String getButtonPath(){return buttonPath;}
     public void setButtonPath(String path){ buttonPath = path; }
+
+    private String currentMimeType;
+    public String getCurrentMimeType(){ return currentMimeType;}
+    public void setCurrentMimeType(String mime){currentMimeType = mime;}
 }
 

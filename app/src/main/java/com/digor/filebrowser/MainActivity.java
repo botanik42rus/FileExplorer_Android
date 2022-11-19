@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public AppCompatTextView tittleTextView;
     private AnimationObject CurrentFragment;
     private AnimationDirection currentDirection;
-
+    private Thread memoryCheckThread;
 
     public TabView tabLeft;
     public TabView tabRight;
@@ -91,9 +91,21 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             LeftNavigationViewSetup();
             TopBarSetup();
             SetupFloatButton();
+            //memoryCheckThread = new Thread(this::GetMemorySize);
+            //memoryCheckThread.start();
         }
         catch (Exception e){
             Log.i("myLog", e.toString());
+        }
+
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        if(memoryCheckThread != null){
+            //memoryCheckThread.stop();
         }
 
     }
@@ -329,6 +341,22 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             bottomAppBar.performShow();
             floatingActionButton.show();
          }
+     }
+
+     private void GetMemorySize() {
+        while(true){
+            try {
+                Runtime runtime =  Runtime.getRuntime();
+
+                long freeSizeBytes = runtime.freeMemory();
+                long totalSizeBytes = runtime.totalMemory();
+                Log.i("myLog", Long.toString((totalSizeBytes - freeSizeBytes)/1_000_000) + "MB");
+
+                Thread.sleep(500);
+            }catch (Exception e){
+
+            }
+        }
      }
 }
 

@@ -72,12 +72,13 @@ public class FileExploreAfterAPI26 implements IFileExplore {
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 String currentItemLastModifiedDate = sdf.format(currentItemPath.toFile().lastModified());
-
+                
                 newStateArray.add(new State(file,
                         currentItemAttr.isDirectory() ? "" : FormatBytes(fileSize),
                         currentItemLastModifiedDate != null ? currentItemLastModifiedDate : "",
                         getImageIcon(currentItemAttr,currentItemPath.toFile(),fileMimeType),
-                        currentItemPath.toString()));
+                        currentItemPath.toString(),
+                        fileMimeType));
             }
         }
         catch (Exception e){
@@ -95,8 +96,13 @@ public class FileExploreAfterAPI26 implements IFileExplore {
             newDrawable = MainActivity.mainContext.getDrawable(R.drawable.folder_ic);
         else if(mimeType == null){}
         else if(mimeType.contains("image")){
-            Bitmap bmp = BitmapFactory.decodeFile(currentFile.getAbsolutePath());
-            newDrawable = new BitmapDrawable(MainActivity.mainContext.getResources(), bmp);
+            newDrawable = MainActivity.mainContext.getDrawable(R.drawable.image_file_ic);
+        }
+        else if(mimeType.contains("video")){
+            newDrawable = MainActivity.mainContext.getDrawable(R.drawable.video_file_ic);
+        }
+        else if(mimeType.contains("audio")){
+            newDrawable = MainActivity.mainContext.getDrawable(R.drawable.audio_file_ic);
         }
         else if(mimeType.contains("pdf")){
             newDrawable = MainActivity.mainContext.getDrawable(R.drawable.pdf_ic);
@@ -122,7 +128,7 @@ public class FileExploreAfterAPI26 implements IFileExplore {
         }
 
         for(File filesToStorage : extRootPath){
-            arrFiles.add(new State(filesToStorage.getName(),"","", MainActivity.mainContext.getDrawable(R.drawable.sd_card_ic), filesToStorage.getPath()));
+            arrFiles.add(new State(filesToStorage.getName(),"","", MainActivity.mainContext.getDrawable(R.drawable.sd_card_ic), filesToStorage.getPath(), null));
         }
 
         isInitial = true;
