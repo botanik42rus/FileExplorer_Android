@@ -100,8 +100,6 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
                 if(currentItem.getCurrentMimeType() != null && currentItem.getCurrentMimeType().contains("image")){
                     Bitmap bmp = BitmapFactory.decodeFile(currentItem.getButtonPath());
                     currentItem.setImageObject(new BitmapDrawable(MainActivity.mainContext.getResources(), Bitmap.createScaledBitmap(bmp, 45, 45, false)));
-                    bmp.recycle();
-                    bmp = null;
                 }
             }
         }catch (Exception  ex){

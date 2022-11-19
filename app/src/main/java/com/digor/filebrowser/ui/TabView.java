@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +26,7 @@ import com.digor.filebrowser.R;
 import com.digor.filebrowser.misc.FileExploreAfterAPI26;
 import com.digor.filebrowser.misc.FileExplore_API_21_to_26;
 import com.digor.filebrowser.misc.IFileExplore;
+import com.digor.filebrowser.misc.IOnBackListner;
 import com.digor.filebrowser.misc.State;
 import com.digor.filebrowser.misc.StateAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,7 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
-public class TabView extends Fragment {
+public class TabView extends Fragment implements IOnBackListner {
 
 
     ArrayList<State> states = new ArrayList<State>();
@@ -45,6 +47,11 @@ public class TabView extends Fragment {
     AppCompatImageButton changeLayoutButton;
     public AppCompatImageButton returnButton;
     TabView currentTabView;
+    String Location;
+    IOnBackListner onBackListnerObject;
+
+
+    public TabView(){}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +76,19 @@ public class TabView extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    @Override
+    public void onPause() {
+        onBackListnerObject = null;
+        super.onPause();
+    }
+
+
+    // Overriding onResume() method
+    @Override
+    public void onResume() {
+        super.onResume();
+        onBackListnerObject = this;
+    }
     private void InitializeRecycleView(View view, LayoutInflater inflater){
         try {
             FileExploreClass = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? new FileExploreAfterAPI26() : new FileExplore_API_21_to_26();
@@ -107,8 +127,33 @@ public class TabView extends Fragment {
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAdapter.openPath(FileExploreClass.getParentPath());
+                if(!FileExploreClass.getIsInitial())
+                    mAdapter.openPath(FileExploreClass.getParentPath());
             }
         });
+    }
+
+    @Override
+    public void  onHiddenChanged(boolean hidden){
+        onBackListnerObject = !hidden ? this : null;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if(!FileExploreClass.getIsInitial())
+            mAdapter.openPath(FileExploreClass.getParentPath());
+
+    }
+
+
+    @Override
+    public boolean getInitialState() {
+        return FileExploreClass.getIsInitial();
+    }
+
+    @Override
+    public IOnBackListner getOnBackListnerObject() {
+        return onBackListnerObject;
     }
 }

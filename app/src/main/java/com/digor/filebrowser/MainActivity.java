@@ -7,6 +7,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,6 +25,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.digor.filebrowser.misc.IOnBackListner;
 import com.digor.filebrowser.misc.PermissionsInfo;
 import com.digor.filebrowser.ui.AboutFragment;
 import com.digor.filebrowser.ui.DevInfoFragment;
@@ -91,21 +94,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             LeftNavigationViewSetup();
             TopBarSetup();
             SetupFloatButton();
-            //memoryCheckThread = new Thread(this::GetMemorySize);
-            //memoryCheckThread.start();
+
         }
         catch (Exception e){
             Log.i("myLog", e.toString());
-        }
-
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-
-        if(memoryCheckThread != null){
-            //memoryCheckThread.stop();
         }
 
     }
@@ -114,25 +106,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         mainContext = this;
         tabLeft = new TabView();
         tabRight = new TabView();
-        /* Test swipe functional
-        FrameLayout FragmentContainer = findViewById(R.id.FragmentContainer);
-        FragmentContainer.setOnTouchListener(new OnSwipeListener(MainActivity.this){
-            @Override
-            public void onSwipeRight() {
-                super.onSwipeLeft();
-                IsAnimationDirection(AnimationObject.TAB_LEFT);
-                CommitFragment(tabLeft);
-                ShowBottomBar();
-            }
-
-            @Override
-            public void onSwipeLeft() {
-                super.onSwipeRight();
-                IsAnimationDirection(AnimationObject.TAB_RIGHT);
-                CommitFragment(tabRight);
-                ShowBottomBar();
-            }
-        });*/
     }
 
     @Override
@@ -188,6 +161,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         }
     }
 
+    private void GoHome(){
+        IsAnimationDirection(AnimationObject.HOME);
+        SkipSelectedBottomBar();
+        CommitFragment(HomeFragment.Instance());
+        ShowBottomBar();
+    }
+
     @Override
     public  boolean onNavigationItemSelected(@NonNull MenuItem item){
         switch (item.getItemId()){
@@ -200,9 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 CommitFragment(tabRight);
                 break;
             case R.id.home_button:
-                IsAnimationDirection(AnimationObject.HOME);
-                CommitFragment(HomeFragment.Instance());
-                SkipSelectedBottomBar();
+                GoHome();
                 break;
             case R.id.settings_button:
                 IsAnimationDirection(AnimationObject.NOT_ANIMATED);
@@ -315,9 +293,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    IsAnimationDirection(AnimationObject.HOME);
-                    SkipSelectedBottomBar();
-                    CommitFragment(HomeFragment.Instance());
+                    GoHome();
                 }
             });
         }
@@ -343,20 +319,47 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
          }
      }
 
-     private void GetMemorySize() {
-        while(true){
-            try {
-                Runtime runtime =  Runtime.getRuntime();
+     private boolean doubleBackPress = false;
+     @Override
+     public void onBackPressed() {
+         if (doubleBackPress) {
+             super.onBackPressed();
+             doubleBackPress = false;
+             return;
+         }
 
-                long freeSizeBytes = runtime.freeMemory();
-                long totalSizeBytes = runtime.totalMemory();
-                Log.i("myLog", Long.toString((totalSizeBytes - freeSizeBytes)/1_000_000) + "MB");
+         doubleBackPress = true;
 
-                Thread.sleep(500);
-            }catch (Exception e){
-
+         if(tabLeft.getOnBackListnerObject() != null){
+            if(tabLeft.getInitialState()) {
+                GoHome();
             }
-        }
+            else{
+                tabLeft.onBackPressed();
+            }
+         }else if(tabRight.getOnBackListnerObject() != null){
+             if(tabRight.getInitialState()){
+                 GoHome();
+             }
+             else{
+                 tabRight.onBackPressed();
+             }
+         }
+         else if(AboutFragment.Instance().getOnBackListnerObject() != null){
+             GoHome();
+         }
+         else if(DevInfoFragment.Instance().getOnBackListnerObject() != null){
+             GoHome();
+         }
+         else if(SettingsFragment.Instance().getOnBackListnerObject() != null){
+             GoHome();
+         }
+         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+             @Override
+             public void run() {
+                 doubleBackPress = false;
+             }
+         }, 200);
      }
 }
 

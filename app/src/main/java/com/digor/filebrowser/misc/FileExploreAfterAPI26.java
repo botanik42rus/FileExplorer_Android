@@ -72,7 +72,7 @@ public class FileExploreAfterAPI26 implements IFileExplore {
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 String currentItemLastModifiedDate = sdf.format(currentItemPath.toFile().lastModified());
-                
+
                 newStateArray.add(new State(file,
                         currentItemAttr.isDirectory() ? "" : FormatBytes(fileSize),
                         currentItemLastModifiedDate != null ? currentItemLastModifiedDate : "",
