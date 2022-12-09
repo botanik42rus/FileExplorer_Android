@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -78,7 +79,7 @@ public class FileExploreAfterAPI26 implements IFileExplore {
                         currentItemLastModifiedDate != null ? currentItemLastModifiedDate : "",
                         getImageIcon(currentItemAttr,currentItemPath.toFile(),fileMimeType),
                         currentItemPath.toString(),
-                        fileMimeType));
+                        fileMimeType, false, View.INVISIBLE));
             }
         }
         catch (Exception e){
@@ -128,7 +129,8 @@ public class FileExploreAfterAPI26 implements IFileExplore {
         }
 
         for(File filesToStorage : extRootPath){
-            arrFiles.add(new State(filesToStorage.getName(),"","", MainActivity.mainContext.getDrawable(R.drawable.sd_card_ic), filesToStorage.getPath(), null));
+            arrFiles.add(new State(filesToStorage.getName(),"","",
+                    MainActivity.mainContext.getDrawable(R.drawable.sd_card_ic), filesToStorage.getPath(), null, false, View.INVISIBLE));
         }
 
         isInitial = true;

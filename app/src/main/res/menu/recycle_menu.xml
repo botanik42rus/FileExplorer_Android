@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/add_folder"
+        android:title="Create new folder"
+        android:orderInCategory="0"/>
+    <item
+        android:id="@+id/select_items"
+        android:title="Select items"
+        android:orderInCategory="1"/>
+    <item
+        android:id="@+id/info_object"
+        android:title="Information"
+        android:orderInCategory="2"/>
+</menu>

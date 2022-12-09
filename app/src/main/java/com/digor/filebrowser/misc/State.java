@@ -14,13 +14,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class State {
-    public State(String name, String size, String dateChange, Drawable image, String path, String mimeType){
+    public State(String name, String size, String dateChange, Drawable image, String path, String mimeType, boolean check, int checkVisible){
         nameObject = name;
         sizeObject = size;
         dateChangeObject = dateChange;
         imageObject = image;
         buttonPath =path;
         currentMimeType = mimeType;
+        checkedObject = check;
+
     }
 
     private String nameObject;
@@ -54,6 +56,14 @@ public class State {
     public void setImageObject(Drawable image){
         imageObject = image;
     }
+
+    private boolean checkedObject;
+    public boolean getCheckedObject(){return checkedObject;}
+    public void setCheckedObject(boolean check){checkedObject = check;}
+
+    private int checkedObjectVisible;
+    public int getCheckedObjectVisible(){return checkedObjectVisible;}
+    public void setCheckedObjectVisible(int checkVisible){checkedObjectVisible = checkVisible;}
 
     private String buttonPath;
     public String getButtonPath(){return buttonPath;}

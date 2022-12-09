@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -38,6 +39,8 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
     private final boolean IsLayoutManagerLinear;
     private TabView currentTabView;
     public Thread setupScetchTh;
+
+
     public StateAdapter(LayoutInflater inflaterParent, List<State> states, IFileExplore fileExploreClass, boolean isLayoutManagerLinear, TabView tabView) {
         this.states = states;
         this.inflater = inflaterParent;
@@ -59,13 +62,26 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
             holderList.iconView.setImageDrawable(state.getImageObject());
 
             holderList.nameView.setText(state.getNameObject());
-
+            holderList.checkedView.setChecked(state.getCheckedObject());
             holderList.dateChangeView.setText(state.getDateChangeObject());
             holderList.sizeView.setText(state.getSizeObject());
             holderList.getCurrentView().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     openPath(state.getButtonPath());
+                }
+            });
+
+            holderList.getCurrentView().setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if(currentTabView.bAppBar != null){
+                        currentTabView.bAppBar.performShow();
+                    }
+                    setCheckBoxesVisible(true);
+                    Toast toast = Toast.makeText(view.getContext(),"long",Toast.LENGTH_SHORT);
+                    toast.show();
+                    return true;
                 }
             });
         }catch (Exception e){
@@ -100,10 +116,20 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
                 if(currentItem.getCurrentMimeType() != null && currentItem.getCurrentMimeType().contains("image")){
                     Bitmap bmp = BitmapFactory.decodeFile(currentItem.getButtonPath());
                     currentItem.setImageObject(new BitmapDrawable(MainActivity.mainContext.getResources(), Bitmap.createScaledBitmap(bmp, 45, 45, false)));
+                    if(bmp != null && !bmp.isRecycled()){
+                        bmp.recycle();
+                        bmp = null;
+                    }
                 }
             }
         }catch (Exception  ex){
 
+        }
+    }
+
+    public void setCheckBoxesVisible(boolean isVisible){
+        for (State state:states) {
+            state.setCheckedObjectVisible(isVisible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -113,19 +139,23 @@ public class StateAdapter extends RecyclerView.Adapter<StateAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        final ImageView iconView;
-        final AppCompatTextView nameView, dateChangeView, sizeView;
-        final String buttonPath;
+        ImageView iconView;
+        AppCompatTextView nameView, dateChangeView, sizeView;
+        String buttonPath;
+        CheckBox checkedView;
         private final View currentView;
+        int checkedViewVisibleState;
+
         ViewHolder(View view, boolean isLinearLayoutManager) {
             super(view);
             iconView = isLinearLayoutManager ? view.findViewById(R.id.icon_template) : view.findViewById(R.id.icon_template_grid);
             nameView = isLinearLayoutManager ? view.findViewById(R.id.name_template) : view.findViewById(R.id.name_template_grid);
-
+            checkedView = isLinearLayoutManager ? view.findViewById(R.id.checkbox_template) : view.findViewById(R.id.checkbox_template_grid);
             dateChangeView = isLinearLayoutManager ? view.findViewById(R.id.dateChange_template) : view.findViewById(R.id.dateChange_template_grid);
             sizeView = isLinearLayoutManager ? view.findViewById(R.id.size_template) : view.findViewById(R.id.size_template_grid);
             buttonPath = "";
             currentView = view;
+            checkedViewVisibleState= View.INVISIBLE;
         }
 
         public View getCurrentView(){return currentView;}

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,6 +30,8 @@ import com.digor.filebrowser.misc.IFileExplore;
 import com.digor.filebrowser.misc.IOnBackListner;
 import com.digor.filebrowser.misc.State;
 import com.digor.filebrowser.misc.StateAdapter;
+import com.google.android.material.behavior.HideBottomViewOnScrollBehavior;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
@@ -49,7 +52,8 @@ public class TabView extends Fragment implements IOnBackListner {
     TabView currentTabView;
     String Location;
     IOnBackListner onBackListnerObject;
-
+    public BottomAppBar bAppBar;
+    public CoordinatorLayout bAppBarLayout;
 
     public TabView(){}
 
@@ -131,6 +135,9 @@ public class TabView extends Fragment implements IOnBackListner {
                     mAdapter.openPath(FileExploreClass.getParentPath());
             }
         });
+
+        bAppBar = view.findViewById(R.id.tabView_bottomAppBar);
+        bAppBar.performHide();
     }
 
     @Override
@@ -141,6 +148,9 @@ public class TabView extends Fragment implements IOnBackListner {
 
     @Override
     public void onBackPressed() {
+        if(bAppBar != null){
+            bAppBar.performHide();
+        }
         if(!FileExploreClass.getIsInitial())
             mAdapter.openPath(FileExploreClass.getParentPath());
 
